@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Поиск по нику</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <style>
+        .search-form-group { margin-bottom: 15px; }
+        .search-results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Поиск по нику</h1>
+        <form id="searchForm">
+            <div class="search-form-group">
+                <input type="text" name="nickname" class="form-control" placeholder="Введите ник" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Поиск</button>
+        </form>
+        <div id="results" class="search-results"></div>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            $('#searchForm').submit(function(event){
+                event.preventDefault();
+                $.ajax({
+                    url: '/search',
+                    type: 'post',
+                    dataType: 'json',
+                    data: $(this).serialize(),
+                    success: function(data) {
+                        var resultHtml = "";
+                        if (data.length > 0) {
+                            resultHtml = "<table class='table table-bordered'><thead><tr><th>Логин</th><th>Пароль</th><th>IP</th></tr></thead><tbody>";
+                            data.forEach(function(row) {
+                                resultHtml += "<tr><td>" + row[0] + "</td><td>" + row[1] + "</td><td>" + (row.length > 2 ? row[2] : "Нет данных") + "</td></tr>";
+                            });
+                            resultHtml += "</tbody></table>";
+                        } else {
+                            resultHtml = "<div class='alert alert-warning'>Ничего не найдено.</div>";
+                        }
+                        $('#results').html(resultHtml);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
